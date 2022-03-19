@@ -5,9 +5,13 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QComboBox, QPushButton, QLineEdit, QMessageBox, QCheckBox
 from math_functions import *
+from cocomo import t1, ORGANIC, SEMI_DETACHED, EMBEDDED
+import numpy as np
+standard = np.ones(len(t1), dtype=float)
+standard = list(standard)
 
 class Example(QMainWindow):
-    
+    kdsi = 1
     def __init__(self):
         super().__init__()
 
@@ -55,6 +59,7 @@ class Example(QMainWindow):
         self.textbox.resize(200, 20)
         self.onlyInt = QIntValidator()
         self.textbox.setValidator(self.onlyInt)
+        self.textbox.setObjectName("box")
 
         combo1_1 = QComboBox(self)
         combo1_1.setObjectName("a1")
@@ -149,17 +154,54 @@ class Example(QMainWindow):
         combo2_3.activated[str].connect(self.onChanged)
         combo2_4.activated[str].connect(self.onChanged)
         combo2_5.activated[str].connect(self.onChanged)
-
-
+        
+        pybutton = QPushButton('OK', self)
+        pybutton.clicked.connect(self.clickMethod)
+        pybutton.resize(200,32)
+        pybutton.move(500, 40)
 
         self.setGeometry(80, 80, 700, 700)
         self.setWindowTitle("QLineEdit Example")
+
+
+
+
         self.show()
+    def clickMethod(self):
+        self.qlabel.setText(self.textbox.text())
+
+
+
+
     def onChanged(self, text):
-        print(self.focusWidget().objectName(), text)
-        self.qlabel.setText(text)
-        self.qlabel.adjustSize()
+        calcvalues = ORGANIC
+        kdsi = self.qlabel.text()
+        ##print(self.focusWidget().objectName(), text)
+
+        try:
+            if(int(kdsi) >300):
+                calcvalues = SEMI_DETACHED
+            if(int(kdsi) >1000):
+                calcvalues = EMBEDDED
+            kdsi = float(kdsi)/1000
+            ##print(kdsi)
+            time = mm_kor(standard, calcvalues[0], float(kdsi), calcvalues[1])
+            print("tiempo" + time)
+            self.qlabel.setText(time)
+            self.qlabel.adjustSize()
+            
+            
+        except:
+            pass
         
+    
+        
+        ##print(standard)
+        
+    def data_from_cocomo():
+        values = []
+        values.add()
+    
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Example()
